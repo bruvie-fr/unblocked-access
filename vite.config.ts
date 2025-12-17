@@ -10,11 +10,19 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
     // Allow Cloudflare Tunnel hostnames (trycloudflare) or other ephemeral hosts
     // so the Vite dev server will accept requests forwarded by the tunnel.
-    // Add additional entries if you use a different tunnel hostname.
+    // Supports explicit hosts, a wildcard regex for *.trycloudflare.com, and
+    // an optional comma-separated env var `ALLOWED_HOSTS` for convenience.
     allowedHosts: [
-      "fish-workers-float-contamination.trycloudflare.com",
       "localhost",
       "127.0.0.1",
+      // previous explicit test-host
+      "fish-workers-float-contamination.trycloudflare.com",
+      // accept any trycloudflare ephemeral hostname
+      /.*\.trycloudflare\.com$/,
+      // allow the specific tunnel the user reported
+      "remix-salmon-bureau-expenditure.trycloudflare.com",
+      // env overrides (comma-separated hostnames)
+      ...(process.env.ALLOWED_HOSTS ? process.env.ALLOWED_HOSTS.split(",").map((s) => s.trim()).filter(Boolean) : []),
     ],
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
