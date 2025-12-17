@@ -106,6 +106,20 @@ const Index = () => {
                 >
                   Detect Scramjet
                 </button>
+                <button
+                  className="text-sm px-3 py-1 rounded-md border border-border/50 text-muted-foreground hover:text-foreground hover:bg-secondary"
+                  onClick={() => {
+                    const current = window.localStorage.getItem("SCRAMJET_BASE_RUNTIME") || "http://129.213.26.17:1337";
+                    const value = window.prompt("Enter Scramjet base (e.g. http://129.213.26.17:1337)", current);
+                    if (value) {
+                      window.localStorage.setItem("SCRAMJET_BASE_RUNTIME", value);
+                      toast({ title: "Proxy saved", description: `Using ${value}` });
+                      window.location.reload();
+                    }
+                  }}
+                >
+                  Set Proxy
+                </button>
               </div>
             </nav>
           </header>

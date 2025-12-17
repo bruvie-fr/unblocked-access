@@ -111,3 +111,7 @@ If your Scramjet instance listens on port **8080** (Scramjet-App commonly uses 8
 localStorage.setItem('SCRAMJET_BASE_RUNTIME','http://SERVER_IP:8080');
 location.reload();
 ```
+
+Quick: You can also set the proxy directly from the app header using the **Set Proxy** button — it will prompt for a base (example: `http://129.213.26.17:1337`) and save it in localStorage so the frontend opens the server IP instead of `localhost`.
+
+If you use the nginx proxy approach, see `deploy/nginx-scramjet-8080.conf` for an example config that serves the frontend on port 8080 and proxies `/scramjet/` to `127.0.0.1:1337`.
