@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { toast } from "@/hooks/use-toast";
+import { buildScramjetCandidates } from "@/lib/proxy";
 import { Shield, Zap, Eye, Lock } from "lucide-react";
 import SearchBar from "@/components/SearchBar";
 import FeatureCard from "@/components/FeatureCard";
@@ -61,6 +63,49 @@ const Index = () => {
                 <span className="text-muted-foreground text-sm hidden sm:block">
                   Free & Anonymous
                 </span>
+                <button
+                  className="text-sm px-3 py-1 rounded-md border border-border/50 text-muted-foreground hover:text-foreground hover:bg-secondary"
+                  onClick={async () => {
+                    // Try common hosts and ports to find a running Scramjet instance.
+                    const hosts = [window.location.hostname, "localhost", "127.0.0.1"];
+                    const ports = [8080, 1337, 80];
+                    const target = "https://example.com";
+                    let foundBase: string | null = null;
+
+                    outer: for (const host of hosts) {
+                      for (const port of ports) {
+                        const base = port === 80 ? `http://${host}` : `http://${host}:${port}`;
+                        // build both query and path variants
+                        const candidates = [
+                          `${base}/?url=${encodeURIComponent(target)}`,
+                          `${base}/${encodeURIComponent(target)}`,
+                        ];
+
+                        for (const c of candidates) {
+                          try {
+                            const controller = new AbortController();
+                            const id = setTimeout(() => controller.abort(), 1500);
+                            await fetch(c, { method: "GET", signal: controller.signal });
+                            clearTimeout(id);
+                            foundBase = base;
+                            break outer;
+                          } catch (e) {
+                            // try next candidate
+                          }
+                        }
+                      }
+                    }
+
+                    if (foundBase) {
+                      window.localStorage.setItem("SCRAMJET_BASE_RUNTIME", foundBase);
+                      toast({ title: "Scramjet detected", description: `Using ${foundBase} for proxying.` });
+                    } else {
+                      toast({ title: "Scramjet not found", description: "No Scramjet instance responded on common ports (try setting SCRAMJET_BASE_RUNTIME manually)." });
+                    }
+                  }}
+                >
+                  Detect Scramjet
+                </button>
               </div>
             </nav>
           </header>

@@ -71,3 +71,43 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+
+## Scramjet proxy integration 🔧
+
+This project can open links via a Scramjet proxy instance. By default the app assumes a local Scramjet dev server at `http://localhost:1337`.
+
+To change the Scramjet host, set the environment variable `VITE_SCRAMJET_BASE` (for example: `https://my-scramjet.example`). The app will open proxied sites using `?url=` by default.
+
+Example (Windows PowerShell):
+
+```powershell
+$Env:VITE_SCRAMJET_BASE = "https://my-scramjet.example"
+npm run dev
+```
+
+Note: Depending on how your Scramjet host is configured, you may need to adapt the proxy path. The frontend uses `?url=` by default for compatibility.
+
+### Quick setup: run a local Scramjet (Scramjet-App)
+
+The project is compatible with [Scramjet-App](https://github.com/MercuryWorkshop/Scramjet-App), an easy-to-deploy demo server.
+
+On a Linux/macOS VPS or local machine:
+
+```sh
+git clone https://github.com/MercuryWorkshop/Scramjet-App
+cd Scramjet-App
+pnpm install
+pnpm start
+# Scramjet will serve on http://localhost:1337 by default
+```
+
+On Windows, use WSL or follow the project's instructions.
+
+Once Scramjet is running locally, open the app and click **Detect Scramjet** in the header — the app will probe `http://localhost:1337`, and if available it will be used automatically (stored in localStorage). You can also set `VITE_SCRAMJET_BASE` in `.env` or set `SCRAMJET_BASE_RUNTIME` in DevTools localStorage.
+
+If your Scramjet instance listens on port **8080** (Scramjet-App commonly uses 8080), the Detect button now probes that port as well. If detection fails, set the runtime value manually in DevTools:
+
+```js
+localStorage.setItem('SCRAMJET_BASE_RUNTIME','http://SERVER_IP:8080');
+location.reload();
+```
